@@ -17,15 +17,19 @@ class _mainScreenState extends State<mainScreen> {
   List<String> readBox = [];
 
   void saveData(shoppingAdd) {
-    _mybox.add(shoppingAdd);
-  }
+    _mybox.put("key", shoppingAdd);
 
-  void getData() {
-    print(Hive.box("myBox").values.toString());
+    readBox.add(_mybox.get(0).toString());
+
+    print(readBox);
+    print(_mybox.get(0));
   }
 
   void deleteData() {
     _mybox.clear();
+    _cartList.clear();
+    Hive.box("myBox").clear();
+    readBox.clear();
   }
 
   @override
@@ -34,6 +38,15 @@ class _mainScreenState extends State<mainScreen> {
         appBar: AppBar(
           title: Text("Item"),
           leading: Icon(Icons.check_circle_outline),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    deleteData();           
+                  });
+                },
+                icon: Icon(Icons.refresh_outlined))
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -61,8 +74,7 @@ class _mainScreenState extends State<mainScreen> {
                                     QuickAlert.show(
                                       context: context,
                                       type: QuickAlertType.success,
-                                      text:
-                                          'Added to cart!',
+                                      text: 'Added to cart!',
                                     );
                                     _cartList.add(shoppingCart.text);
                                     saveData(_cartList);
@@ -70,21 +82,6 @@ class _mainScreenState extends State<mainScreen> {
                                   });
                                 },
                                 child: Text("Add")),
-                            TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    getData();
-                                  });
-                                },
-                                child: Text("review")),
-                            TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    deleteData();
-                                  _cartList.clear();
-                                  });
-                                },
-                                child: Text("delete all")),
                           ],
                         )
                       ],
@@ -101,9 +98,13 @@ class _mainScreenState extends State<mainScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(_mybox.get(index).toString()),
+                              Text(_mybox.getAt(index).toString()),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() {
+                                      _cartList.removeAt(index);
+                                    });
+                                  },
                                   icon: Icon(Icons.delete_outline_rounded))
                             ],
                           ),
