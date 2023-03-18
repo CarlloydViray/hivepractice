@@ -11,100 +11,93 @@ class mainScreen extends StatefulWidget {
 class _mainScreenState extends State<mainScreen> {
   final _mybox = Hive.box("myBox");
 
-  var userName = TextEditingController();
+  var shoppingCart = TextEditingController();
+  List<String> _cartList = [];
 
-  var firstName = TextEditingController();
-
-  var lastName = TextEditingController();
-
-  var address = TextEditingController();
-
-  var tempValUsername;
-
-  void saveData(username, firstname, lastname, address) {
-    _mybox.put('username', username);
-    _mybox.put('firstname', firstname);
-    _mybox.put('lastname', lastname);
-    _mybox.put('address', address);
+  void saveData(shoppingAdd) {
+    _mybox.add(shoppingAdd);
   }
 
   void getData() {
-    var tempUsername = _mybox.get('username');
-    userName.text = tempUsername;
+  print(Hive.box("myBox").values.toString());
 
-    var tempFirstname = _mybox.get('firstname');
-    firstName.text = tempFirstname;
+  }
 
-    var tempLastname = _mybox.get('lastname');
-    lastName.text = tempLastname;
-
-    var tempAddress = _mybox.get('address');
-    address.text = tempAddress;
-
-    print(_mybox.get('username'));
-    print(_mybox.get('firstname'));
-    print(_mybox.get('lastname'));
-    print(_mybox.get('address'));
+  void deleteData(){
+    _mybox.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Hive Flutter"),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    saveData(userName.text, firstName.text, lastName.text,
-                        address.text);
-
-                    userName.clear();
-                    firstName.clear();
-                    lastName.clear();
-                    address.clear();
-
-                    getData();
-                  });
-                },
-                icon: Icon(Icons.save_alt_rounded))
-          ],
+          title: Text("Item"),
+          leading: Icon(Icons.check_circle_outline),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: userName,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Enter Username'),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: firstName,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Enter Firstname'),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: lastName,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Enter Last Name'),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                controller: address,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Enter Address'),
-              ),
-            ],
-          ),
-        ));
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: shoppingCart,
+                          decoration: InputDecoration(
+                            labelText: "Item",
+                            hintText: "Input Text",
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(onPressed: () {
+                              setState(() {
+                                _cartList.add(shoppingCart.text);
+                                saveData(_cartList);
+                                shoppingCart.clear();
+                              });
+                            }, child: Text("Add")),
+                            TextButton(onPressed: () {
+                              getData();
+                            }, child: Text("review")),
+                            TextButton(onPressed: () {
+                              deleteData();
+                              _cartList.clear();
+                            }, child: Text("delete all")),
+                            
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 12),
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(_mybox.get(index).toString()),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.delete_outline_rounded))
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    itemCount: _mybox.length,
+                  ),
+                ),
+              ],
+            )));
   }
 }
