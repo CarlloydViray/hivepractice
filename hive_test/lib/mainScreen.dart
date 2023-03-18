@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:quickalert/quickalert.dart';
 
 class mainScreen extends StatefulWidget {
   const mainScreen({super.key});
@@ -13,17 +14,17 @@ class _mainScreenState extends State<mainScreen> {
 
   var shoppingCart = TextEditingController();
   List<String> _cartList = [];
+  List<String> readBox = [];
 
   void saveData(shoppingAdd) {
     _mybox.add(shoppingAdd);
   }
 
   void getData() {
-  print(Hive.box("myBox").values.toString());
-
+    print(Hive.box("myBox").values.toString());
   }
 
-  void deleteData(){
+  void deleteData() {
     _mybox.clear();
   }
 
@@ -54,21 +55,36 @@ class _mainScreenState extends State<mainScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            TextButton(onPressed: () {
-                              setState(() {
-                                _cartList.add(shoppingCart.text);
-                                saveData(_cartList);
-                                shoppingCart.clear();
-                              });
-                            }, child: Text("Add")),
-                            TextButton(onPressed: () {
-                              getData();
-                            }, child: Text("review")),
-                            TextButton(onPressed: () {
-                              deleteData();
-                              _cartList.clear();
-                            }, child: Text("delete all")),
-                            
+                            TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    QuickAlert.show(
+                                      context: context,
+                                      type: QuickAlertType.success,
+                                      text:
+                                          'Added to cart!',
+                                    );
+                                    _cartList.add(shoppingCart.text);
+                                    saveData(_cartList);
+                                    shoppingCart.clear();
+                                  });
+                                },
+                                child: Text("Add")),
+                            TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    getData();
+                                  });
+                                },
+                                child: Text("review")),
+                            TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    deleteData();
+                                  _cartList.clear();
+                                  });
+                                },
+                                child: Text("delete all")),
                           ],
                         )
                       ],
