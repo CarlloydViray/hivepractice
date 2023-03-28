@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_test/class/user.dart';
+import 'package:hive_test/screens/mainScreen.dart';
 import 'package:hive_test/screens/register.dart';
+import 'package:quickalert/quickalert.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -17,17 +19,19 @@ final myBox = Hive.box('users');
 var username = TextEditingController();
 var password = TextEditingController();
 
-void login() async {
+void login(BuildContext context) async {
   await Hive.openBox('users');
   if (myBox.containsKey(username.text)) {
     final user = await myBox.get(username.text) as User;
     if (user.password == password.text) {
-      print('Success');
+      Navigator.push(context, CupertinoPageRoute(builder: (context){
+        return mainScreen();
+      }));
     } else {
-      print('Incorrect Password');
+      QuickAlert.show(context: context, type: QuickAlertType.error, text: 'Incorrect Password');
     }
   } else {
-    print('User not found');
+    QuickAlert.show(context: context, type: QuickAlertType.error, text: 'User not found');
   }
 }
 
@@ -61,7 +65,7 @@ class _LoginState extends State<Login> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  login();
+                  login(context);
                 },
                 child: Text('Login')),
             ElevatedButton(

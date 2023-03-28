@@ -57,14 +57,9 @@ class _RegisterState extends State<Register> {
               ElevatedButton(
                   onPressed: () {
                     addUser();
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) {
-                          return Login();
-                        },
-                      ),
-                    );
+                    Navigator.pop(context);
+                    username.clear();
+                    password.clear();
                   },
                   child: Text('Register Account'))
             ],
