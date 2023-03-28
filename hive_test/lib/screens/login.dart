@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -24,14 +22,23 @@ void login(BuildContext context) async {
   if (myBox.containsKey(username.text)) {
     final user = await myBox.get(username.text) as User;
     if (user.password == password.text) {
-      Navigator.push(context, CupertinoPageRoute(builder: (context){
+      Navigator.push(context, CupertinoPageRoute(builder: (context) {
         return mainScreen();
       }));
+      username.clear();
+      password.clear();
     } else {
-      QuickAlert.show(context: context, type: QuickAlertType.error, text: 'Incorrect Password');
+      QuickAlert.show(
+          context: context,
+          type: QuickAlertType.error,
+          text: 'Incorrect Password');
+      password.clear();
     }
   } else {
-    QuickAlert.show(context: context, type: QuickAlertType.error, text: 'User not found');
+    QuickAlert.show(
+        context: context, type: QuickAlertType.error, text: 'User not found');
+    username.clear();
+    password.clear();
   }
 }
 
